@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Card from '../components/Card.astro';
+import { getCollection } from 'astro:content';
+
+// Fetch blog posts and sort by date descending
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const recentPosts = posts.slice(0, 3);
+---
+
+<BaseLayout>
+  <!-- Hero / Introduction Section -->
+  <section class="py-8">
+    <p class="text-base text-neutral-500 dark:text-neutral-400">
+      Halo, saya
+    </p>
+    <h1 class="mt-2 text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl dark:text-neutral-100">
+      Umem
+    </h1>
+    <p class="mt-4 max-w-prose text-lg leading-relaxed text-neutral-600 dark:text-neutral-300 font-medium">
+      Ilmunya masih cetek, lagi proses buat jadi better, anjay jadi better gak tuc.
+    </p>
+  </section>
+
+  <!-- Recent Posts Section -->
+  <section class="mt-12">
+    <div class="flex items-baseline justify-between">
+      <h2 class="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
+        Catatan terbaru
+      </h2>
+      <a 
+        href="/blog/" 
+        class="text-sm font-medium text-accent-600 hover:underline dark:text-accent-400"
+      >
+        Lihat semua catatan &rarr;
+      </a>
+    </div>
+
+    <!-- Posts Grid list -->
+    <div class="mt-6 grid gap-4">
+      {recentPosts.map((post) => (
+        <Card 
+          href={`/blog/${post.id}/`}
+          title={post.data.title}
+          description={post.data.description}
+          date={post.data.pubDate}
+          tags={post.data.tags}
+        />
+      ))}
+    </div>
+  </section>
+</BaseLayout>

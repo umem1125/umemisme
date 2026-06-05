@@ -1,0 +1,96 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import { Image } from 'astro:assets';
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  heroImage?: any;
+  tags?: string[];
+  body?: string;
+}
+
+const { title, description, pubDate, updatedDate, heroImage, tags = [], body = '' } = Astro.props;
+
+// Calculate reading time
+const words = body ? body.trim().split(/\s+/).length : 0;
+const readingTime = words > 0 ? Math.ceil(words / 225) : 1;
+---
+
+<BaseLayout title={title} description={description}>
+  <article class="max-w-3xl mx-auto py-6">
+    <!-- Back button -->
+    <a 
+      href="/blog" 
+      class="inline-flex items-center gap-1.5 text-sm font-medium text-neutral-500 hover:text-accent-600 dark:text-neutral-400 dark:hover:text-accent-400 transition-colors mb-6 group"
+    >
+      <svg class="h-4 w-4 transition-transform group-hover:-translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M19 12H5M12 19l-7-7 7-7"></path>
+      </svg>
+      Kembali ke blog
+    </a>
+
+    <!-- Title & Metadata Header -->
+    <header class="mb-8 border-b border-neutral-200/60 dark:border-neutral-800/60 pb-8">
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-neutral-900 dark:text-neutral-100 tracking-tight leading-tight">
+        {title}
+      </h1>
+      
+      <div class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm text-neutral-500 dark:text-neutral-400">
+        <time datetime={pubDate.toISOString()}>
+          <FormattedDate date={pubDate} />
+        </time>
+        <span aria-hidden="true">·</span>
+        <span>{readingTime} mnt baca</span>
+        
+        {tags.length > 0 && (
+          <>
+            <span aria-hidden="true">·</span>
+            <ul class="flex flex-wrap gap-1.5">
+              {tags.map((tag) => (
+                <li>
+                  <a 
+                    href={`/blog?tag=${tag}`}
+                    class="rounded-md bg-neutral-100 px-1.5 py-0.5 text-xs text-neutral-600 hover:bg-accent-100 hover:text-accent-700 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-accent-950 dark:hover:text-accent-400 transition-colors"
+                  >
+                    #{tag}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
+    </header>
+
+    <!-- Optional Hero Image -->
+    {heroImage && (
+      <div class="relative w-full aspect-video rounded-xl overflow-hidden border border-neutral-200/60 dark:border-neutral-800/60 mb-8">
+        {typeof heroImage === 'string' ? (
+          <img 
+            src={heroImage} 
+            alt={title} 
+            class="w-full h-full object-cover object-center" 
+          />
+        ) : (
+          <Image 
+            src={heroImage} 
+            alt={title} 
+            width={1020}
+            height={510}
+            class="w-full h-full object-cover object-center"
+            priority
+          />
+        )}
+      </div>
+    )}
+
+    <!-- Article Content -->
+    <div class="prose prose-neutral dark:prose-invert prose-base sm:prose-lg max-w-none">
+      <slot />
+    </div>
+  </article>
+</BaseLayout>

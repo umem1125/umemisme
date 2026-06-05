@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
+import AboutHeroImage from '../assets/blog-placeholder-about.jpg';
+---
+
+<BaseLayout title="About Me" description="Tentang saya, karir, dan teknologi yang saya gunakan.">
+  <div class="max-w-3xl mx-auto py-6">
+    <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+      Tentang Saya
+    </h1>
+
+    <div class="mt-8 flex flex-col md:flex-row gap-8 items-start">
+      <!-- Portrait Image -->
+      <div class="w-48 h-48 rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-800 shrink-0 relative">
+        <Image 
+          src={AboutHeroImage} 
+          alt="Foto Profil" 
+          width={400}
+          height={400}
+          class="w-full h-full object-cover object-center"
+        />
+      </div>
+
+      <!-- About Description -->
+      <div class="prose prose-neutral dark:prose-invert max-w-none leading-relaxed text-neutral-700 dark:text-neutral-300">
+        <p>
+          Halo! Saya Chaerul Umam, seorang software engineer yang berfokus pada pengembangan aplikasi web modern. Saya suka membagikan catatan teknis, eksperimen kode, dan cerita di balik proses pembuatan website.
+        </p>
+        <p>
+          Teknologi utama yang saya gunakan sehari-hari meliputi:
+        </p>
+        <ul>
+          <li><strong>Frontend:</strong> Astro.js, React, Tailwind CSS, TypeScript</li>
+          <li><strong>Backend & Serverless:</strong> Node.js, Cloudflare Workers / Pages</li>
+          <li><strong>Tools:</strong> Git, Neovim / VS Code</li>
+        </ul>
+        <p>
+          Jika Anda ingin berdiskusi atau berkolaborasi, silakan hubungi saya melalui email atau temukan saya di platform sosial media.
+        </p>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

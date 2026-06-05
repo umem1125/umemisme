@@ -1,0 +1,146 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Card from '../../components/Card.astro';
+import { getCollection } from 'astro:content';
+
+// Fetch blog posts and sort by pubDate
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+// Get all unique tags from all posts
+const allTags = ['all', ...new Set(posts.flatMap(post => post.data.tags || []))];
+---
+
+<BaseLayout title="Blog" description="Tulisan ngawur, yang penting jadi.">
+  <section class="max-w-3xl mx-auto">
+    <!-- Header -->
+    <div class="mb-10">
+      <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+        Catatan kecil aje
+      </h1>
+      <p class="text-base text-neutral-600 dark:text-neutral-450 mt-2 leading-relaxed">
+        Tulisan ngawur, yang penting jadi.
+      </p>
+    </div>
+
+    <!-- Filter Tools -->
+    <div class="mb-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 py-4 border-y border-neutral-200/60 dark:border-neutral-800/60">
+      <!-- Search Input -->
+      <div class="relative flex-grow max-w-sm">
+        <input 
+          type="text" 
+          id="search-input" 
+          placeholder="Cari tulisan..." 
+          class="w-full px-3.5 py-1.5 text-sm bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg focus:outline-none focus:ring-1 focus:ring-accent-500 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500"
+        />
+      </div>
+
+      <!-- Tag Filters Scrollable List -->
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+        {allTags.map((tag) => (
+          <button
+            type="button"
+            data-tag={tag}
+            class:list={[
+              "tag-filter-btn px-3 py-1 text-xs font-medium rounded-md border transition-all duration-200 cursor-pointer capitalize select-none whitespace-nowrap",
+              tag === 'all'
+                ? "bg-accent-600 text-white border-accent-600 dark:bg-accent-500 dark:border-accent-500"
+                : "bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+            ]}
+          >
+            {tag === 'all' ? 'Semua' : `#${tag}`}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <!-- Posts Grid List -->
+    <div id="posts-grid" class="grid gap-4">
+      {posts.map((post) => (
+        <div 
+          class="post-card-container animate-fade-in" 
+          data-title={post.data.title.toLowerCase()} 
+          data-desc={post.data.description.toLowerCase()} 
+          data-tags={post.data.tags.join(',').toLowerCase()}
+        >
+          <Card 
+            href={`/blog/${post.id}/`}
+            title={post.data.title}
+            description={post.data.description}
+            date={post.data.pubDate}
+            tags={post.data.tags}
+          />
+        </div>
+      ))}
+    </div>
+
+    <!-- No results indicator -->
+    <div id="no-results" class="hidden text-center py-16">
+      <h3 class="text-lg font-bold text-neutral-700 dark:text-neutral-300">Tulisan tidak ditemukan</h3>
+      <p class="text-sm text-neutral-500 dark:text-neutral-500 mt-1">Coba gunakan kata kunci pencarian yang lain.</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  // Setup interactive search and filtering
+  const searchInput = document.getElementById('search-input') as HTMLInputElement | null;
+  const postCards = document.querySelectorAll('.post-card-container');
+  const tagButtons = document.querySelectorAll('.tag-filter-btn');
+  const noResults = document.getElementById('no-results');
+  let activeTag = 'all';
+
+  function filterPosts() {
+    const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    let visibleCount = 0;
+
+    postCards.forEach((cardNode) => {
+      const card = cardNode as HTMLElement;
+      const title = card.getAttribute('data-title') || '';
+      const desc = card.getAttribute('data-desc') || '';
+      const tags = card.getAttribute('data-tags') || '';
+      
+      const matchesQuery = title.includes(query) || desc.includes(query) || tags.includes(query);
+      const matchesTag = activeTag === 'all' || tags.split(',').includes(activeTag);
+
+      if (matchesQuery && matchesTag) {
+        card.style.display = 'block';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    if (noResults) {
+      if (visibleCount === 0) {
+        noResults.classList.remove('hidden');
+      } else {
+        noResults.classList.add('hidden');
+      }
+    }
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener('input', filterPosts);
+  }
+  
+  tagButtons.forEach((btnNode) => {
+    const btn = btnNode as HTMLButtonElement;
+    btn.addEventListener('click', () => {
+      // Reset active styles on all buttons
+      tagButtons.forEach((bNode) => {
+        const b = bNode as HTMLButtonElement;
+        b.classList.remove('bg-accent-600', 'text-white', 'border-accent-600', 'dark:bg-accent-500', 'dark:border-accent-500');
+        b.classList.add('bg-white', 'dark:bg-neutral-900', 'text-neutral-600', 'dark:text-neutral-400', 'border-neutral-200', 'dark:border-neutral-800');
+      });
+      
+      // Add active styles to clicked button
+      btn.classList.remove('bg-white', 'dark:bg-neutral-900', 'text-neutral-600', 'dark:text-neutral-400', 'border-neutral-200', 'dark:border-neutral-800');
+      btn.classList.add('bg-accent-600', 'text-white', 'border-accent-600', 'dark:bg-accent-500', 'dark:border-accent-500');
+      
+      activeTag = btn.getAttribute('data-tag') || 'all';
+      filterPosts();
+    });
+  });
+</script>
