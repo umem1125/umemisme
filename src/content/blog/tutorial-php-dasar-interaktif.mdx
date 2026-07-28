@@ -1,0 +1,192 @@
+---
+title: 'Belajar PHP Dasar Tapi Bisa Langsung Run di Browser! 🚀'
+description: 'Materi lengkap PHP Dasar mulai dari variabel, loop, sampai function. Plus, lo bisa edit dan jalankan kodenya langsung di halaman ini, anjay!'
+pubDate: 'Jul 28 2026'
+tags: ['php', 'backend', 'tutorial', 'interaktif']
+featured: true
+---
+
+import PhpPlayground from '../../components/PhpPlayground.astro';
+
+Halo gais! 👋
+
+Kalau lo mau jadi backend developer, atau minimal pengen ngerti gimana server side scripting bekerja, **PHP** adalah salah satu bahasa yang wajib lo lirik. Gak usah dengerin meme-meme di luar sana yang bilang PHP udah mati—kenyataannya, sebagian besar web di internet masih jalan pake PHP!
+
+Nah, biar belajarnya gak bosen cuma baca teori, di tutorial kali ini gue udah siapin **Interactive PHP Playground** di setiap materi. Jadi, lo bisa edit kodenya dan klik tombol **Run Code** buat langsung lihat hasilnya di console sebelah kanan! Gokil kan?
+
+Yuk, langsung kita gas bahas PHP Dasar!
+
+---
+
+## 1. Pengenalan PHP & Sintaks Dasar
+
+PHP itu kepanjangannya *PHP: Hypertext Preprocessor*. Sintaks PHP ditulis di dalam tag khusus, yaitu `<?php ... ?>`. Untuk mencetak tulisan ke layar, kita pake perintah `echo`.
+
+Coba klik **Run Code** di bawah ini buat nyoba:
+
+<PhpPlayground 
+  title="Sintaks Dasar PHP" 
+  code={`<?php
+echo "Halo dunia! Gue lagi belajar PHP di blognya Umem. 😎";
+?>`} 
+/>
+
+---
+
+## 2. Variabel
+
+Di PHP, kita bikin variabel pake simbol dollar (`$`). PHP itu sifatnya *loosely typed*, artinya kita gak perlu nentuin tipe datanya secara eksplisit pas bikin variabel.
+
+Coba ganti isi variabel `$nama` di bawah pake nama lo sendiri, terus jalanin:
+
+<PhpPlayground 
+  title="Variabel PHP" 
+  code={`<?php
+$nama = "Umem";
+$role = "Software Developer";
+
+echo "Nama gue " . $nama . ", role gue " . $role . ".\\n";
+echo "Salam kenal gais!";
+?>`} 
+/>
+
+---
+
+## 3. Tipe Data
+
+PHP punya beberapa tipe data standar yang sering dipake:
+* **String:** Teks (diapit kutip).
+* **Integer:** Angka bulat.
+* **Float:** Angka desimal.
+* **Boolean:** `true` atau `false`.
+* **Null:** Variabel tanpa nilai.
+
+Fungsi `var_dump()` berguna banget buat ngintip tipe data dan nilai dari suatu variabel. Coba tes:
+
+<PhpPlayground 
+  title="Tipe Data PHP" 
+  code={`<?php
+$nama = "Umem";
+$umur = 25;
+$isCoder = true;
+
+var_dump($nama);
+var_dump($umur);
+var_dump($isCoder);
+?>`} 
+/>
+
+---
+
+## 4. Operator
+
+Operator dipake buat manipulasi nilai variabel. Ada operator aritmatika (`+`, `-`, `*`, `/`, `%`), operator perbandingan (`==`, `===`, `!=`, `>`, `<`), dan logika (`&&`, `||`, `!`).
+
+<PhpPlayground 
+  title="Operator PHP" 
+  code={`<?php
+$nilaiA = 15;
+$nilaiB = 4;
+
+$hasilTambah = $nilaiA + $nilaiB;
+$sisaBagi = $nilaiA % $nilaiB;
+
+echo "Hasil Tambah: " . $hasilTambah . "\\n";
+echo "Sisa Bagi: " . $sisaBagi;
+?>`} 
+/>
+
+---
+
+## 5. Control Flow (Pengondisian)
+
+Biar program lo bisa ngambil keputusan, kita pake `if`, `else`, `elseif`, atau `switch`.
+
+Silakan ganti nilai `$nilaiUjian` di bawah buat ngeliat perbedaan outputnya:
+
+<PhpPlayground 
+  title="Control Flow (If-Else)" 
+  code={`<?php
+$nilaiUjian = 85;
+
+if ($nilaiUjian >= 90) {
+    echo "Mantap! Nilai lo A.";
+} elseif ($nilaiUjian >= 75) {
+    echo "Lulus cuy, dapet B. Lumayan!";
+} else {
+    echo "Waduh, kudu remedial nih.";
+}
+?>`} 
+/>
+
+---
+
+## 6. Loop (Perulangan)
+
+Males nulis kode berulang-ulang? Pake loop! PHP punya `for`, `while`, `do-while`, dan `foreach` (khusus untuk array).
+
+Contoh perulangan sederhana pake `for` buat ngitung 1 sampai 5:
+
+<PhpPlayground 
+  title="Loop (For)" 
+  code={`<?php
+for ($i = 1; $i <= 5; $i++) {
+    echo "Perulangan ke-" . $i . "\\n";
+}
+?>`} 
+/>
+
+---
+
+## 7. Function
+
+Function adalah blok kode yang bisa dipanggil berulang kali. Lo bisa ngirim argumen/parameter ke dalam function dan ngasilin nilai balik (*return value*).
+
+<PhpPlayground 
+  title="Function PHP" 
+  code={`<?php
+function sapaOrang($nama) {
+    return "Halo " . $nama . ", lagi ngoding apa hari ini?\\n";
+}
+
+echo sapaOrang("Umem");
+echo sapaOrang("Kawan Coder");
+?>`} 
+/>
+
+---
+
+## 8. Array
+
+Array dipake buat nyimpen banyak nilai dalam satu variabel. Di PHP ada **Indexed Array** (indeks angka) dan **Associative Array** (indeks custom pake key).
+
+Coba running contoh manipulasi array berikut:
+
+<PhpPlayground 
+  title="Array PHP" 
+  code={`<?php
+// Indexed Array
+$bahasa = ["PHP", "JavaScript", "Python"];
+echo "Gue suka belajar " . $bahasa[0] . "\\n\\n";
+
+// Associative Array
+$profil = [
+    "nama" => "Umem",
+    "keahlian" => "Web Development"
+];
+echo "Profil Singkat:\\n";
+foreach ($profil as $key => $value) {
+    echo "- " . ucfirst($key) . ": " . $value . "\\n";
+}
+?>`} 
+/>
+
+---
+
+## Kesimpulan
+
+Gimana? Belajar PHP Dasar gak seseram yang lo bayangkan, kan? Apalagi bisa langsung run kodenya di browser begini. 
+
+Materi-materi di atas adalah fondasi penting sebelum lo masuk ke topik yang lebih advanced seperti OOP (Object-Oriented Programming), koneksi ke Database (MySQL/PostgreSQL), atau pake framework PHP modern kayak **Laravel**.
+
+Kalau lo punya pertanyaan atau ada bagian yang masih bikin bingung, langsung aja tulis opini lo atau colek gue. *Happy coding gais!* 🍻

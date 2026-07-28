@@ -1,0 +1,125 @@
+---
+interface Props {
+  code: string;
+  title?: string;
+}
+
+const { code, title = "PHP Playground" } = Astro.props;
+---
+
+<php-playground class="block my-6 border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden bg-neutral-50 dark:bg-neutral-900 shadow-sm" data-code={code}>
+  <div class="flex items-center justify-between px-4 py-2 border-b border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-950">
+    <span class="text-xs font-semibold text-neutral-600 dark:text-neutral-400 font-mono">{title}</span>
+    <button class="run-btn px-3 py-1 text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 rounded transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer disabled:opacity-55">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
+        <path d="M6.3 2.841A1.5 1.5 0 0 1 8.53 1.61l7.84 4.8a1.5 1.5 0 0 1 0 2.541l-7.84 4.8A1.5 1.5 0 0 1 5 12.502V3.727c0-.33.106-.65.3-.886Z" />
+      </svg>
+      Run Code
+    </button>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-neutral-200 dark:divide-neutral-800">
+    <div class="relative font-mono text-sm">
+      <textarea class="code-editor w-full h-44 p-4 bg-transparent text-neutral-800 dark:text-neutral-200 focus:outline-none resize-none font-mono leading-relaxed" spellcheck="false">{code.trim()}</textarea>
+    </div>
+    <div class="p-4 bg-neutral-950 text-neutral-200 font-mono text-xs flex flex-col justify-between min-h-[11rem]">
+      <div>
+        <div class="text-[10px] uppercase tracking-wider text-neutral-500 font-bold mb-1">Output:</div>
+        <pre class="output-console whitespace-pre-wrap leading-relaxed text-emerald-400">Klik "Run Code" untuk menjalankan...</pre>
+      </div>
+      <div class="status-indicator text-[10px] text-neutral-500 text-right mt-2">Ready</div>
+    </div>
+  </div>
+</php-playground>
+
+<script>
+  class PhpPlayground extends HTMLElement {
+    private runBtn: HTMLButtonElement | null = null;
+    private editor: HTMLTextAreaElement | null = null;
+    private output: HTMLPreElement | null = null;
+    private status: HTMLDivElement | null = null;
+    
+    // Static fields shared across all playgrounds
+    private static phpInstance: any = null;
+    private static initPromise: Promise<any> | null = null;
+
+    constructor() {
+      super();
+    }
+
+    async connectedCallback() {
+      this.runBtn = this.querySelector('.run-btn');
+      this.editor = this.querySelector('.code-editor');
+      this.output = this.querySelector('.output-console');
+      this.status = this.querySelector('.status-indicator');
+
+      if (this.runBtn) {
+        this.runBtn.addEventListener('click', () => this.runPHP());
+      }
+    }
+
+    private static async getPhpInstance() {
+      if (this.phpInstance) return this.phpInstance;
+      if (this.initPromise) return this.initPromise;
+
+      this.initPromise = (async () => {
+        // Dynamic import to bypass build-time bundling issues with external modules
+        const { PhpWeb } = await import(/* @vite-ignore */ 'https://cdn.jsdelivr.net/npm/php-wasm/PhpWeb.mjs');
+        const php = new PhpWeb();
+        return new Promise((resolve) => {
+          php.addEventListener('ready', () => {
+            resolve(php);
+          });
+        });
+      })();
+
+      this.phpInstance = await this.initPromise;
+      return this.phpInstance;
+    }
+
+    async runPHP() {
+      if (!this.editor || !this.output || !this.status || !this.runBtn) return;
+
+      this.runBtn.disabled = true;
+      this.status.textContent = 'Loading PHP WASM...';
+      this.output.textContent = 'Memulai engine PHP (WASM)...';
+      this.output.className = 'output-console whitespace-pre-wrap leading-relaxed text-neutral-400';
+
+      try {
+        const php = await PhpPlayground.getPhpInstance();
+        
+        this.status.textContent = 'Running...';
+        this.output.textContent = '';
+
+        let result = '';
+        const outputHandler = (e: any) => {
+          result += e.detail;
+          this.output!.textContent = result;
+        };
+        
+        php.addEventListener('output', outputHandler);
+
+        const code = this.editor.value;
+        await php.run(code);
+
+        php.removeEventListener('output', outputHandler);
+
+        if (!result) {
+          this.output.textContent = '(No output)';
+          this.output.className = 'output-console whitespace-pre-wrap leading-relaxed text-neutral-500';
+        } else {
+          this.output.className = 'output-console whitespace-pre-wrap leading-relaxed text-emerald-400';
+        }
+        
+        this.status.textContent = 'Completed';
+      } catch (err: any) {
+        this.output.textContent = `Error: ${err.message || err}`;
+        this.output.className = 'output-console whitespace-pre-wrap leading-relaxed text-red-400';
+        this.status.textContent = 'Error';
+      } finally {
+        this.runBtn.disabled = false;
+      }
+    }
+  }
+
+  customElements.define('php-playground', PhpPlayground);
+</script>
