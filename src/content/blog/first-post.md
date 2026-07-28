@@ -1,14 +1,14 @@
 ---
-title: 'Kenalin, Gue Umam!'
+title: 'Kenalin, Gue Umem!'
 description: 'Seputar perjalanan singkat gue beralih profesi dari Sastra Inggris ke dunia kodingan.'
 pubDate: 'Jun 05 2026'
 tags: ['intro', 'personal', 'webdev']
 featured: true
 ---
 
-Halo gais! Kenalin, nama gue Umam. 👋
+Halo gais! Kenalin, nama gue Umem. 👋
 
-Mungkin keliatan agak random, tapi gue adalah lulusan S1 Sastra Inggris yang akhirnya nyemplung dan beralih profesi ke dunia IT. Sekarang, gue fokus berkarir sebagai **Software / Web Developer**, khususnya di bidang *frontend development*. 
+Mungkin keliatan agak random, tapi gue adalah lulusan S1 Sastra Inggris yang akhirnya nyemplung dan beralih profesi ke dunia IT. Sekarang, gue fokus berkarir sebagai **Software / Web Developer**.
 
 Meskipun background kuliah gue beda jauh sama dunia perkodingan, tapi ketertarikan gue buat ngulik teknologi baru bikin gue betah banget di industri ini. 
 
